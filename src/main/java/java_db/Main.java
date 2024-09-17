@@ -58,7 +58,7 @@ public class Main {
                     break;
 
                 case EDIT:
-                    System.out.println("Введите ID животного для редактирования: ");
+                    System.out.println("Введите id животного для редактирования: ");
                     int id = Integer.parseInt(scanner.nextLine());
                     animal = factory.createAnimal(
                             getType(scanner),
