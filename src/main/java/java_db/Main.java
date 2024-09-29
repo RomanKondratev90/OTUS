@@ -47,7 +47,7 @@ public class Main {
                     break;
 
                 case LIST:
-                    ArrayList<Animal> animals = animalTable.read();
+                    ArrayList<Animal> animals = animalTable.read(null);  // Передаем null для получения всех животных
                     if (animals.isEmpty()) {
                         System.out.println("Список животных пуст.");
                     } else {
@@ -75,7 +75,7 @@ public class Main {
                 case FILTER:
                     System.out.println("Введите тип животного для фильтрации (cat/dog/duck): ");
                     String filterType = scanner.nextLine().trim().toLowerCase();
-                    ArrayList<Animal> filteredAnimals = animalTable.filterByType(filterType);
+                    ArrayList<Animal> filteredAnimals = animalTable.read(filterType);
                     for (Animal filteredAnimal : filteredAnimals) {
                         System.out.println(filteredAnimal);
                     }
