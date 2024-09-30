@@ -12,10 +12,10 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws SQLException {
-        AnimalTable animalTable = new AnimalTable();
+        MySQLConnect dbConnector = new MySQLConnect();
+        AnimalTable animalTable = new AnimalTable(dbConnector);
         Scanner scanner = new Scanner(System.in);
         Factory factory = new Factory();
-        MySQLConnect dbConnector = new MySQLConnect();
 
         try {
             while (true) {

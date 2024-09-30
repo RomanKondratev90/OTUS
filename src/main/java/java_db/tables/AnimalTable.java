@@ -3,6 +3,7 @@ package java_db.tables;
 import java_db.animals.Cat;
 import java_db.animals.Dog;
 import java_db.animals.Duck;
+import java_db.db.IDBConnect;
 import java_db.db.MySQLConnect;
 import java_db.objects.Animal;
 
@@ -13,8 +14,8 @@ import java.util.ArrayList;
 public class AnimalTable extends AbsTable {
     private static final String NAME = "animals";
 
-    public AnimalTable() {
-        super(NAME);
+    public AnimalTable(IDBConnect dbConnector) {
+        super(dbConnector, NAME);
     }
 
     public void write(Animal animal) {
