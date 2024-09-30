@@ -25,8 +25,8 @@ public class MySQLConnect implements IDBConnect {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-
     }
+
     public static void close() {
         if (statement != null) {
             try {

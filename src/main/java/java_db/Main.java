@@ -15,81 +15,87 @@ public class Main {
         AnimalTable animalTable = new AnimalTable();
         Scanner scanner = new Scanner(System.in);
         Factory factory = new Factory();
+        MySQLConnect dbConnector = new MySQLConnect();
 
-        while (true) {
-            System.out.println("Введите команду (add/list/edit/filter/exit): ");
-            String input = scanner.nextLine().trim().toUpperCase();
+        try {
+            while (true) {
+                System.out.println("Введите команду (add/list/edit/filter/exit): ");
+                String input = scanner.nextLine().trim().toUpperCase();
 
-            Command command;
-            try {
-                command = Command.valueOf(input);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Неизвестная команда. Попробуйте снова.");
-                continue;
-            }
+                Command command;
+                try {
+                    command = Command.valueOf(input);
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Неизвестная команда. Попробуйте снова.");
+                    continue;
+                }
 
-            switch (command) {
-                case ADD:
-                    Animal animal;
-                    while (true) {
-                        System.out.println("Какое животное (cat/dog/duck)?");
-                        String type = scanner.nextLine().trim().toLowerCase();
+                switch (command) {
+                    case ADD:
+                        Animal animal;
+                        while (true) {
+                            System.out.println("Какое животное (cat/dog/duck)?");
+                            String type = scanner.nextLine().trim().toLowerCase();
 
-                        if (type.equals("cat") || type.equals("dog") || type.equals("duck")) {
-                            animal = factory.createAnimal(type, getName(scanner), getAge(scanner), getWeight(scanner), getColor(scanner));
-                            animalTable.write(animal);
-                            System.out.println("Животное добавлено в базу данных.");
-                            break;
+                            if (type.equals("cat") || type.equals("dog") || type.equals("duck")) {
+                                animal = factory.createAnimal(type, getName(scanner), getAge(scanner), getWeight(scanner), getColor(scanner));
+                                animalTable.write(animal);
+                                System.out.println("Животное добавлено в базу данных.");
+                                break;
+                            } else {
+                                System.out.println("Ввести можно только cat/dog/duck. Попробуйте снова.");
+                            }
+                        }
+                        break;
+
+                    case LIST:
+                        ArrayList<Animal> animals = animalTable.read(null);
+                        if (animals.isEmpty()) {
+                            System.out.println("Список животных пуст.");
                         } else {
-                            System.out.println("Ввести можно только cat/dog/duck. Попробуйте снова.");
+                            for (Animal a : animals) {
+                                System.out.println(a);
+                            }
                         }
-                    }
-                    break;
+                        break;
 
-                case LIST:
-                    ArrayList<Animal> animals = animalTable.read(null);  // Передаем null для получения всех животных
-                    if (animals.isEmpty()) {
-                        System.out.println("Список животных пуст.");
-                    } else {
-                        for (Animal a : animals) {
-                            System.out.println(a);
+                    case EDIT:
+                        System.out.println("Введите ID животного для редактирования: ");
+                        int id = Integer.parseInt(scanner.nextLine());
+                        animal = factory.createAnimal(
+                                getType(scanner),
+                                getName(scanner),
+                                getAge(scanner),
+                                getWeight(scanner),
+                                getColor(scanner)
+                        );
+                        animal.setId(id);
+                        animalTable.update(animal);
+                        System.out.println("Животное обновлено.");
+                        break;
+
+                    case FILTER:
+                        System.out.println("Введите тип животного для фильтрации (cat/dog/duck): ");
+                        String filterType = scanner.nextLine().trim().toLowerCase();
+                        ArrayList<Animal> filteredAnimals = animalTable.read(filterType);
+                        for (Animal filteredAnimal : filteredAnimals) {
+                            System.out.println(filteredAnimal);
                         }
-                    }
-                    break;
+                        break;
 
-                case EDIT:
-                    System.out.println("Введите ID животного для редактирования: ");
-                    int id = Integer.parseInt(scanner.nextLine());
-                    animal = factory.createAnimal(
-                            getType(scanner),
-                            getName(scanner),
-                            getAge(scanner),
-                            getWeight(scanner),
-                            getColor(scanner)
-                    );
-                    animal.setId(id);
-                    animalTable.update(animal);
-                    System.out.println("Животное обновлено.");
-                    break;
+                    case EXIT:
+                        System.out.println("Выход из программы.");
+                        dbConnector.close();
+                        scanner.close();
+                        return;
 
-                case FILTER:
-                    System.out.println("Введите тип животного для фильтрации (cat/dog/duck): ");
-                    String filterType = scanner.nextLine().trim().toLowerCase();
-                    ArrayList<Animal> filteredAnimals = animalTable.read(filterType);
-                    for (Animal filteredAnimal : filteredAnimals) {
-                        System.out.println(filteredAnimal);
-                    }
-                    break;
-
-                case EXIT:
-                    System.out.println("Выход из программы.");
-                    scanner.close();
-                    System.exit(0);
-                    break;
-
-                default:
-                    System.out.println("Неизвестная команда.");
+                    default:
+                        System.out.println("Неизвестная команда.");
+                }
             }
+        } finally {
+            dbConnector.close();
+            scanner.close();
         }
     }
 

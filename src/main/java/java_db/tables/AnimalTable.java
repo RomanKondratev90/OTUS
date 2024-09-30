@@ -48,31 +48,42 @@ public class AnimalTable extends AbsTable {
                 ? String.format("SELECT * FROM %s;", NAME)
                 : String.format("SELECT * FROM %s WHERE type = '%s';", NAME, filter);
 
-        ResultSet resultSet = this.dbConnector.executeQuery(query);
-        while (resultSet.next()) {
-            int id = resultSet.getInt("id");
-            String color = resultSet.getString("color");
-            String name = resultSet.getString("name");
-            int weight = resultSet.getInt("weight");
-            String type = resultSet.getString("type");
-            int age = resultSet.getInt("age");
+        ResultSet resultSet = null;
+        try {
+            resultSet = this.dbConnector.executeQuery(query);
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String color = resultSet.getString("color");
+                String name = resultSet.getString("name");
+                int weight = resultSet.getInt("weight");
+                String type = resultSet.getString("type");
+                int age = resultSet.getInt("age");
 
-            Animal animal;
-            switch (type.toLowerCase()) {
-                case "cat":
-                    animal = new Cat(name, age, weight, color);
-                    break;
-                case "dog":
-                    animal = new Dog(name, age, weight, color);
-                    break;
-                case "duck":
-                    animal = new Duck(name, age, weight, color);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Неизвестный тип животного: " + type);
+                Animal animal;
+                switch (type.toLowerCase()) {
+                    case "cat":
+                        animal = new Cat(name, age, weight, color);
+                        break;
+                    case "dog":
+                        animal = new Dog(name, age, weight, color);
+                        break;
+                    case "duck":
+                        animal = new Duck(name, age, weight, color);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Неизвестный тип животного: " + type);
+                }
+                animal.setId(id);
+                animals.add(animal);
             }
-            animal.setId(id);
-            animals.add(animal);
+        } finally {
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
         return animals;
     }
